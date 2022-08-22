@@ -1,0 +1,45 @@
+---
+title: "The Association between Food Insecurity and COVID-19 Cases: Evidence from Nebraska SNAP Policy"
+author: "Matthew Lavallee, BA; Nadia Abuelezam, ScD;"
+date: "From the Connell School of Nursing, Boston College (Lavallee, Abuelezam)"
+indent:
+output: 
+  word_document:
+    reference_docx: word_styles_real.docx
+bibliography: references.bib
+csl: the-lancet.csl
+---
+
+\newpage
+
+# Introduction
+The COVID-19 has created disruptions 
+
+# Methods
+
+## Overview
+
+## Data Sources
+
+We drew from two public data sources. First, we use the Household Pulse Survey to estimate state-level rates of food security, and vaccination rate by month. Second, we use the COVID Data Tracker from the Centers for Disease Control and Prevention to collect state-level information on COVID-19 prevalence.
+
+# Results
+
+# Discussion
+
+# X
+
+```{r fig 1, fig.cap='this is a caption',echo=FALSE,warning=F}
+knitr::include_graphics(here::here("trunk","analysis","EA Ext Fig","plot.png"))
+```
+
+```{r fig 2, fig.cap='Shaded regions represent when Emergency allotments were inactive for Nebraska.',echo=FALSE,warning=F}
+knitr::include_graphics(here::here("trunk","analysis","Nebraska Trends","plot.png"))
+```
+
+```{r fig 3, fig.cap='Black line is Nebraska. Shaded regions represent when Emergency allotments were inactive for Nebraska.',echo=FALSE,warning=F}
+knitr::include_graphics(here::here("trunk","analysis","Nebraska Trends","plot2.png"))
+```
+
+\newpage
+# References
