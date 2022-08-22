@@ -1,0 +1,60 @@
+---
+title: "Untitled"
+author: "Lavallee, Matthew"
+date: "7/28/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#Load Data----
+```{r load data, include=FALSE}
+source(here("code","load data","hps","load_hps.R"), local = knitr::knit_global())
+# purpose: script reads in HHP data, aggregates and writes two dfs
+# source: https://www2.census.gov/programs-surveys/demo/datasets/hhp
+# output: here("trunk","derived","Standard Files","Household Pulse Survey Data Tables","puf.txt")
+#         here("trunk","derived","Standard Files","Household Pulse Survey Data Tables","repwgt.txt")
+# a list of raw files for weights and data in:
+#         here("trunk","raw","Household Pulse Survey Data Tables","puf")
+#         here("trunk","raw","Household Pulse Survey Data Tables","repwgt")
+
+source(here("code","load data","hps","subset_hps.R"), local = knitr::knit_global())
+# purpose: reads in aggregated hps, renames and recodes cols
+# source: 
+# output: here("trunk","derived","Gold Files","Household Pulse Survey Data Tables","hps_final.txt")
+
+source(here("code","load data","covid","covid_state.R"), local = knitr::knit_global())
+# purpose: collects state/jur data about covid cases and deaths
+# source: https://github.com/nytimes/covid-19-data
+# output: here("trunk","raw","COVID-19","covid_state.txt")
+
+source(here("code","load data","covid","hospital_impacts.R"), local = knitr::knit_global())
+# purpose: collects state data on impacts on hospitals
+# source: https://data.cdc.gov/Case-Surveillance/United-States-COVID-19-Cases-and-Deaths-by-State-o/9mfq-cb36/data
+# output: https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh
+```
+
+#Create Datasets----
+```{r create datasets, include=FALSE}
+source(here("code","create datasets","fps_hps.R"), local = knitr::knit_global())
+# purpose: reads in raw hps data and subsets to needed columns
+# source: https://www2.census.gov/programs-surveys/demo/datasets/hhp
+# output: here("trunk","derived","Gold Files","Household Pulse Survey Data Tables","hhp_final.txt")
+```
+
+#Create Figures----
+```{r create figures, include=FALSE}
+source(here("code","create figures","SNAP EA","create ea fig.R"), local = knitr::knit_global())
+# purpose: Creates figure of EA extensions by month
+# source: https://www.fns.usda.gov/snap/covid-19-emergency-allotments-guidance
+# output: here("trunk","analysis","EA Ext Fig","plot.png")
+```
+
+#Write Manuscript----
+```{r manuscript}
+rmarkdown::render(here("manuscripts","manuscript.Rmd"), "word_document")
+#purpose: writes manuscript
+browseURL(here("manuscripts","manuscript.docx"))
+#purpose: open .docx
+```
