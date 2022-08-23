@@ -8,3 +8,5 @@
 
 ## To run this project from scratch
 
+This project can be run entirely from `run_project.Rmd`
+
