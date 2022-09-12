@@ -7,13 +7,25 @@ output:
   word_document:
     reference_docx: word_styles_real.docx
 bibliography: references.bib
+link-citations: true
 csl: the-lancet.csl
 ---
 
 \newpage
 
 # Introduction
-The COVID-19 has created disruptions 
+
+The importance of social determinants of health (SDOH) in improving population health and reducing health disparities has become evident among experts and policymakers [@artiga2018; @usdepartmentofhealthandhumanservicesofficeofdiseasepreventionandhealthpromotion]. These national priorities, and the necessity to better understand SDOH, have only been reinvigorated by the COVID-19 pandemic. Due to the immense headline numbers for COVID-19 (94.6 million recorded cases and 1.05 million reported deaths as of September 2022), and the unlikeliness for COVID-19 to be eradicated [cite], understanding how SDOH impact the prevalence and severity of the disease is crucial.
+
+Despite early work highlighting the pandemic’s detrimental effect on SDOH by widening long-standing disparities via disruption of social, economic, and health care systems [@abrams2020], lacking empirical evidence of SDOH impact on COVID-19 leaves the relationship between the two unclear. Food security has a well-documented relationship with health outcomes [@gundersen2015; @heflin2019a] and given the increases in food insecurity during the early pandemic is of particular importance [@schanzenbach2020; @feedingamerica2021].
+
+Supplemental Nutrition Assistance Program (SNAP) is a state-run program that distributes federal funds to low-income households for food assistance. The amount of money a household receives depends on 3 factors: 1) the cost the USDA determines a minimally costly healthy diet, 2) the income of the household, and 3) the size of the household. Namely, a household is expected to contribute 30% of its net income on food, making the difference between the max allotment and that 30% the amount of benefits a household will receive. 
+
+The Trump and Biden administrations both passed legislation to increase the value of the allotments to combat the increases in food insecurity during the pandemic [@lowey2020; @cuellar2020]. These increases took two forms: 1) the calculated allotment that a household received was automatically increased to the max for the household size (emergency allotments, EA), 2) the maximum allotment was increased 15% from its previous amount^[There had been a third type of increase by the Biden administration, which ensured that every household receive at least an additional $95 from the EA increase, but it is not relevant for the time frame of the study.]. Each state was required to enroll in the EA increases monthly in order to receive benefits, creating the potential for staggered and inconsistent implementation of these increases. Nearly every state enrolled for a single consistent span but one state, Nebraska, which opted out of the EA increases for 4 months before re-enrolling. During this 4 month period all other states were enrolled in EA increases, creating a valuable natural experiment for understanding both the EA increases impact on food insecurity, and food insecurity’s impact on COVID-19 prevalence and severity.
+
+
+
+
 
 # Methods
 
@@ -29,15 +41,15 @@ We drew from two public data sources. First, we use the Household Pulse Survey t
 
 # X
 
-```{r fig 1, fig.cap='this is a caption',echo=FALSE,warning=F}
+```{r fig 1, fig.cap='this is a caption',echo=FALSE,warning=F,include=F}
 knitr::include_graphics(here::here("trunk","analysis","EA Ext Fig","plot.png"))
 ```
 
-```{r fig 2, fig.cap='Shaded regions represent when Emergency allotments were inactive for Nebraska.',echo=FALSE,warning=F}
+```{r fig 2, fig.cap='Shaded regions represent when Emergency allotments were inactive for Nebraska.',echo=FALSE,warning=F,include=F}
 knitr::include_graphics(here::here("trunk","analysis","Nebraska Trends","plot.png"))
 ```
 
-```{r fig 3, fig.cap='Black line is Nebraska. Shaded regions represent when Emergency allotments were inactive for Nebraska.',echo=FALSE,warning=F}
+```{r fig 3, fig.cap='Black line is Nebraska. Shaded regions represent when Emergency allotments were inactive for Nebraska.',echo=FALSE,warning=F,include=F}
 knitr::include_graphics(here::here("trunk","analysis","Nebraska Trends","plot2.png"))
 ```
 

@@ -4,10 +4,10 @@ library(lubridate)
 
 #set up----
 df<-fread(here("trunk","derived","Standard Files","Household Pulse Survey Data Tables","puf.txt"))
-dir.create(here("trunk","derived","Gold Files"))
-dir.create(here("trunk","derived","Gold Files","Household Pulse Survey Data Tables"))
+dir.create(here("trunk","derived","Gold Files"),showWarnings = F)
+dir.create(here("trunk","derived","Gold Files","Household Pulse Survey Data Tables"),showWarnings = F)
 
-df[,.N,.(var=INCOME,WEEK)]
+
 #create gold file----
 dfg<-
   df[,.(
@@ -17,21 +17,16 @@ dfg<-
     birth_year_imputed=case_when(ABIRTH_YEAR==1~1,
                                  ABIRTH_YEAR==2~0), 
       # binary of whether birth year is imputed, integer (1/0)
-    gender_b=case_when(EGENDER==1~"M",
-                       EGENDER==2~"F",
-                       is.na(EGENDER)&EGENID_BIRTH==1~"M",
-                       is.na(EGENDER)&EGENID_BIRTH==2~"F"), 
+    gender_b=case_when(EGENDER==1|is.na(EGENDER)&EGENID_BIRTH==1~"M",
+                       EGENDER==2|is.na(EGENDER)&EGENID_BIRTH==2~"F"), 
       # EGENDER runs weeks 1-33, EGENID_BIRTH is assigned gender 34-47, character binary (M/F)
     gender_i=case_when(GENID_DESCRIBE==1~"M",
                        GENID_DESCRIBE==2~"F",
                        GENID_DESCRIBE==3~"T",
-                       GENID_DESCRIBE==4~"None",
-                       GENID_DESCRIBE%in%c(-99,-88)~"NA"), 
+                       GENID_DESCRIBE==4~"None"), 
       # gender identity, runs week 34-47, character (M/F/T/None/NA)
-    gender_imputed=case_when(AGENDER==1~1,
-                             AGENDER==2~0,
-                             AGENDER==NA&AGENID_BIRTH==1~1,
-                             AGENDER==NA&AGENID_BIRTH==2~0), 
+    gender_imputed=case_when(AGENDER==1|is.na(AGENDER)&AGENID_BIRTH==1~1,
+                             AGENDER==2|is.na(AGENDER)&AGENID_BIRTH==2~0), 
       # AGENDER runs 1-33, AGENID_BIRTH runs 34-47, binary (1/0)
     hispanic=case_when(RHISPANIC==1~0,
                        RHISPANIC==2~1),
@@ -51,8 +46,7 @@ dfg<-
                              MS==2~"Widowed",
                              MS==3~"Divorced",
                              MS==4~"Separated",
-                             MS==5~"Never Married",
-                             MS%in%c(-99,-88)~"NA"), 
+                             MS==5~"Never Married"), 
       # marital status, character (Married/Widowed/Divorced/Separated/Never Married/NA)
     education=case_when(EEDUC==1~"Less than HS",
                         EEDUC==2~"Some HS",
@@ -69,8 +63,7 @@ dfg<-
                               SEXUAL_ORIENTATION==2~"Straight",
                               SEXUAL_ORIENTATION==3~"Bisexual",
                               SEXUAL_ORIENTATION==4~"Other",
-                              SEXUAL_ORIENTATION==5~"Unsure",
-                              SEXUAL_ORIENTATION%in%c(-99,-88,NA)~"NA"), 
+                              SEXUAL_ORIENTATION==5~"Unsure"), 
       # sex or. begins week 34, character (Gay or lesbian/Straight/Bisexual/Other/Unsure/NA)  
     hh_size=THHLD_NUMPER, 
       # household size - includes adult and children, integer 1-40
@@ -78,73 +71,67 @@ dfg<-
       # household size - adults only, integer 1-40
     hh_kids=THHLD_NUMKID,
       # household size - includes adult and children, integer 1-40
-    kids_l5=case_when(KIDS_LT5Y==1~"Yes",
-                      T~"NA"), 
+    kids_l5=case_when(KIDS_LT5Y==1~"Yes"), 
       # binary of kids under 5 in hh - begins week 34, integer (1/0)
-    kids_5to11=case_when(KIDS_5_11Y==1~"Yes",
-                       T~"NA"),
+    kids_5to11=case_when(KIDS_5_11Y==1~"Yes"),
       # binary of kids 5-11 in hh - begins week 34, integer (1/0)
-    kids_12to17=case_when(KIDS_12_17Y==1~"Yes",
-                       T~"NA"),
+    kids_12to17=case_when(KIDS_12_17Y==1~"Yes"),
       # binary of kids 12-17 in hh - begins week 34, integer (1/0)
-    employed=as.numeric(case_when(ANYWORK==1~"1",
-                                  ANYWORK==2~"0",
-                                  T~"NA")),
+    employed=case_when(ANYWORK==1~1,
+                       ANYWORK==2~0),
       #binary of whether or not employed, integer (1/0)
-    unemployment=as.numeric(case_when(UNEMPPAY%in%c(1:3)~"1",
-                                      UNEMPPAY==4~"0",
-                                      T~"NA")),
+    unemployment=case_when(UNEMPPAY%in%c(1:3)~1,
+                           UNEMPPAY==4~0),
       #binary of whether or not person received pay for time not working (1/0)
     income=case_when(INCOME==1~"Less than $25,000",
                      INCOME==2~"$25,000 - $34,999",
                      INCOME==3~"$35,000 - $49,999",
                      INCOME==4~"50,000 - $74,999",
                      INCOME==5~"$75,000 - $99,999",
-                     INCOME==6~"$100,000 - $149,000",
-                     INCOME==7~"≥$200,000"),
+                     INCOME==6~"$100,000 - $149,999",
+                     INCOME==7~"$150,000 - $199,999",
+                     INCOME==8~"≥$200,000"),
       #categorical 2019 HH income variable
+    income_max=case_when(INCOME==1~24999,
+                     INCOME==2~34999,
+                     INCOME==3~49999,
+                     INCOME==4~74999,
+                     INCOME==5~99999,
+                     INCOME==6~149999,
+                     INCOME==7~199999,
+                     INCOME==8~200000),
+      #max 2019 HH income variable, numeric 
     
   ##COVID----
-    covid_vax=as.numeric(case_when(RECVDVACC==1~"1",
-                                   RECVDVACC==2~"0",
-                                   T~"NA")),
+    covid_vax=case_when(RECVDVACC==1~1,
+                        RECVDVACC==2~0),
       # binary of covid vaccine status - begins week 21, integer (1/0)
-    covid_doses_i=case_when(DOSES==1~"All",
-                            DOSES==2~"Not All",
-                            is.na(DOSES)&DOSESRV%in%c(1,2)~"All",
-                            is.na(DOSES)&DOSESRV==3~"Not All"),
+    covid_doses_i=case_when(DOSES==1|is.na(DOSES)&DOSESRV%in%c(1,2)~"All",
+                            DOSES==2|is.na(DOSES)&DOSESRV==3~"Not All"),
       # intention to get vaccine doses - ends week 40, character (All/Not All)
     covid_doses_r=case_when(NUMDOSES==1~"1",
                             NUMDOSES==2~"2",
                             NUMDOSES==3~"3",
-                            NUMDOSES==4~">=4",
-                            NUMDOSES%in%c(-99,-88)~"NA"),
+                            NUMDOSES==4~">=4"),
       # number of doses - begins week 40, character (1/2/3/>=4/NA)
   ##Food Security----
-    snap=as.numeric(case_when(SNAP_YN==1~"1",
-                              SNAP_YN==2~"0",
-                              SNAP_YN%in%c(-99,-88)~"NA")), 
+    snap=case_when(SNAP_YN==1~1,
+                   SNAP_YN==2~0), 
       # SNAP binary, integer (1/0/NA)
-    food_insec=as.numeric(case_when(CURFOODSUF%in%1:2~"0",
-                                    CURFOODSUF%in%3:4~"1",
-                                    CURFOODSUF%in%c(-99,-88)~"NA")), 
+    food_insec=case_when(CURFOODSUF%in%1:2~0,
+                         CURFOODSUF%in%3:4~1), 
       # food insufficient binary, integer (1/0/NA)
-    child_food_insec=as.numeric(case_when(CHILDFOOD%in%c(1,2)~"1",
-                                          CHILDFOOD==3~"0",
-                                          CHILDFOOD%in%c(-99,-88)~"NA")),
+    child_food_insec=case_when(CHILDFOOD%in%1:2~1,
+                               CHILDFOOD==3~0),
       # child food insufficient binary, integer (1/0/NA)
-    food_insec_afford=as.numeric(case_when(FOODRSNRV1==1~"1",
-                                           T~"NA")),
-      # food insecure due to cost, integer (1/0/NA)
-    food_insec_couldnt_get_out=as.numeric(case_when(FOODRSNRV2==1~"1",
-                                                    T~"NA")),
-      # food insecure due to inability to get out, integer (1/0/NA)
-    food_insec_safety=as.numeric(case_when(FOODRSNRV3==1~"1",
-                                           T~"NA")),
+    food_insec_afford=case_when(FOODRSNRV1==1~1),
+      # food insecure due to cost, integer (1/NA)
+    food_insec_couldnt_get_out=case_when(FOODRSNRV2==1~1),
+      # food insecure due to inability to get out, integer (1/NA)
+    food_insec_safety=case_when(FOODRSNRV3==1~1),
       # food insecure due safety concerns or no delivery, integer (1/0/NA)
-    food_insec_no_reason=as.numeric(case_when(FOODRSNRV4==1~"1",
-                                           T~"NA")),
-      # food insecure due to no reason, integer (1/0/NA)
+    food_insec_no_reason=case_when(FOODRSNRV4==1~1),
+      # food insecure due to no reason, integer (1/NA)
   ##Weights & Flags----    
     pweight=PWEIGHT,
     hweight=HWEIGHT,
@@ -202,12 +189,16 @@ dfg<-
       WEEK==47~ymd("2022-07-11"))
   ##End----
   )]
-
+  ##Age groupings----
 dfg[,age:=eeptools::age_calc(ymd(paste0(birth_year,"-1-1")),survey_date_end,units = "years")]
 dfg[,age_g:=case_when(round(age)%in%0:17~"0 to 17",
                       round(age)%in%18:35~"18 to 35",
                       round(age)%in%36:50~"36 to 50",
                       round(age)%in%51:65~"51 to 65",
-                      round(age)%in%65:80~"65 to 80",
-                      round(age)%in%81:90~"80 to 90")]
+                      round(age)%in%66:80~"66 to 80",
+                      round(age)%in%81:90~"81 to 90")]
+
 fwrite(dfg,here("trunk","derived","Gold Files","Household Pulse Survey Data Tables","hps_final.txt"))
+  #save recoded df
+rm(list=ls())
+  #clear environment
